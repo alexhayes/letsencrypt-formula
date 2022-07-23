@@ -3,6 +3,10 @@
 
 {% from "letsencrypt/map.jinja" import letsencrypt with context %}
 
+include:
+  - letsencrypt.install
+  - letsencrypt.config
+
 {% if letsencrypt.install_method == 'package' %}
   {% set check_cert_cmd = letsencrypt._cli_path ~ ' certificates --cert-name' %}
   {% set renew_cert_cmd = letsencrypt._cli_path ~ ' renew' %}
@@ -30,6 +34,12 @@
     - template: jinja
     - source: salt://letsencrypt/files/check_letsencrypt_cert.sh.jinja
     - mode: 755
+    - require:
+        {%- if letsencrypt.install_method == 'git' %}
+        - git: letsencrypt-client
+        {%- elif letsencrypt.install_method == 'pip' %}
+        - virtualenv: letsencrypt-client
+        {%- endif %}
 
 {{ renew_cert_cmd }}:
   file.{{ old_renew_cert_cmd_state }}:
