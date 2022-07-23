@@ -107,6 +107,7 @@ letsencrypt-crontab-{{ setname }}-{{ domainlist[0] }}:
     - hour: '{{ letsencrypt.cron.hour }}'
     - dayweek: '{{ letsencrypt.cron.dayweek }}'
     - identifier: letsencrypt-{{ setname }}-{{ domainlist[0] }}
+    {%- if old_cron_state == 'present' %}
     - require:
       - cmd: create-initial-cert-{{ setname }}-{{ domainlist | join('+') }}
       {% if letsencrypt.install_method == 'package' %}
@@ -114,6 +115,7 @@ letsencrypt-crontab-{{ setname }}-{{ domainlist[0] }}:
       {% else %}
       - file: {{ renew_cert_cmd }}
       {% endif %}
+    {%- endif %}
 
 create-fullchain-privkey-pem-for-{{ setname }}:
   cmd.run:
