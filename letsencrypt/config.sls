@@ -20,3 +20,5 @@ letsencrypt-config:
     - makedirs: true
     - context:
         config: {{ letsencrypt.config | json }}
+    - require:
+        - file: letsencrypt-config-directory
